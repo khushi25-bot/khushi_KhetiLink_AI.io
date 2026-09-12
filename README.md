@@ -1,2 +1,2 @@
-# khushi25-bot.github.io
+# khushi_KhetiLink_AI.io
 This is my GitHub page
