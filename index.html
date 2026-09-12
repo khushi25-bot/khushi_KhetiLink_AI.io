@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KhetiLink AI — Smart Selling for Gujarat Farmers</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#2e7d32;--green-light:#43a047;--green-bg:#e8f5e9;--green-mid:#66bb6a;--earthy:#795548;--earthy-light:#a1887f;--earthy-bg:#efebe9;--gold:#f9a825;--bg:#f7f9f5;--surface:#fff;--border:#e0e8dc;--text:#1a2e1a;--muted:#5a7a5a;--subtle:#8fa08f;--blue:#1565c0;--blue-light:#e3f2fd;--red:#c62828;--shadow:0 2px 12px rgba(46,125,50,.08);--shadow-md:0 4px 24px rgba(46,125,50,.13);--radius:14px;--radius-sm:8px}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-family:'Segoe UI',system-ui,sans-serif}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--green-mid);border-radius:3px}
+.screen{display:none;min-height:100vh;padding-bottom:80px}.screen.active{display:block}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 16px;height:58px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(46,125,50,.06)}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem;color:var(--green);cursor:pointer}
+.location-pill{font-size:.72rem;background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:20px;font-weight:600}
+.header-right{display:flex;align-items:center;gap:6px}
+.lang-grp{display:flex;gap:3px}
+.lang-btn{font-size:.68rem;padding:3px 8px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--muted);cursor:pointer;font-family:inherit}
+.lang-btn.active{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:700}
+.icon-btn{background:none;border:none;font-size:1.15rem;cursor:pointer;position:relative;padding:4px}
+.badge{position:absolute;top:0;right:0;width:8px;height:8px;background:var(--gold);border-radius:50%;border:2px solid #fff}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--border);display:flex;height:62px;box-shadow:0 -2px 12px rgba(0,0,0,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:none;font-size:.58rem;color:var(--subtle);font-family:inherit;font-weight:500;transition:color .2s;padding:6px 2px}
+.nav-icon{font-size:1.25rem}.nav-item.active{color:var(--green)}
+.nav-item.ai-nav{background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;font-weight:700}
+.nav-item.ai-nav .nav-icon{font-size:1.4rem}
+.container{max-width:500px;margin:0 auto;padding:18px 16px}
+.page-title{font-size:1.45rem;font-weight:800;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:.83rem;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);margin-bottom:8px;margin-top:18px}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.price-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:box-shadow .2s,border-color .2s}
+.price-chip:hover{box-shadow:var(--shadow-md);border-color:var(--green-mid)}
+.crop-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.price-val{font-size:1.3rem;font-weight:800;color:var(--text)}.price-unit{font-size:.73rem;color:var(--muted)}
+.trend{font-size:.78rem;font-weight:600;margin-top:4px}.trend.up{color:#2e7d32}.trend.down{color:var(--red)}
+.ai-card{background:linear-gradient(145deg,#1b5e20,#2e7d32,#388e3c);border-radius:var(--radius);padding:20px;color:#fff;position:relative;overflow:hidden;margin-bottom:16px;box-shadow:0 6px 24px rgba(46,125,50,.30)}
+.ai-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(255,255,255,.06);border-radius:50%}
+.ai-card-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.7;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ai-card-crop{font-size:.83rem;opacity:.85;margin-bottom:12px}
+.rec-badge{display:inline-block;padding:6px 18px;border-radius:20px;font-weight:800;font-size:1rem;letter-spacing:.04em;margin-bottom:14px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4)}
+.rec-badge.wait{border-color:rgba(255,255,255,.5)}.rec-badge.sell{background:rgba(249,168,37,.25);border-color:#fdd835;color:#fdd835}
+.rec-badge.store{background:rgba(21,101,192,.3);border-color:#90caf9;color:#bbdefb}.rec-badge.partial{background:rgba(156,39,176,.25);border-color:#ce93d8;color:#e1bee7}
+.ai-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.ai-row:last-of-type{border:none}.ai-row-label{font-size:.78rem;opacity:.8}.ai-row-val{font-size:.88rem;font-weight:700}
+.conf-bar{height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin-top:8px}
+.conf-fill{height:4px;background:#fdd835;border-radius:2px}
+.ai-btn{margin-top:14px;width:100%;padding:11px;border-radius:var(--radius-sm);background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;transition:background .2s}
+.ai-btn:hover{background:rgba(255,255,255,.28)}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
+.quick-item:hover{box-shadow:var(--shadow-md);border-color:var(--green-mid)}
+.q-icon{font-size:1.6rem;margin-bottom:6px}.q-label{font-size:.8rem;font-weight:600;color:var(--text)}.q-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+.filter-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.filter-scroll::-webkit-scrollbar{display:none}
+.filter-pill{white-space:nowrap;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;font-family:inherit}
+.filter-pill.active{background:var(--green);border-color:var(--green);color:#fff}
+.buyer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;transition:box-shadow .2s,border-color .2s;position:relative}
+.buyer-card:hover{box-shadow:var(--shadow-md);border-color:var(--green-mid)}
+.buyer-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.buyer-name{font-size:1rem;font-weight:700;color:var(--text)}.buyer-type{font-size:.7rem;color:var(--muted);margin-top:2px}
+.match-pill{background:var(--green-bg);color:var(--green);font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.buyer-price{font-size:1.35rem;font-weight:800;color:var(--green);margin-bottom:10px}
+.buyer-price span{font-size:.78rem;font-weight:500;color:var(--muted)}
+.buyer-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.meta-tag{font-size:.73rem;color:var(--muted);display:flex;align-items:center;gap:4px}.star{color:var(--gold)}
+.view-btn{width:100%;padding:10px;border-radius:var(--radius-sm);background:var(--green-bg);border:1.5px solid var(--green);color:var(--green);font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
+.view-btn:hover{background:var(--green);color:#fff}
+.top-badge{position:absolute;top:-1px;left:18px;background:var(--gold);color:#fff;font-size:.63rem;font-weight:700;padding:2px 10px;border-radius:0 0 8px 8px;letter-spacing:.04em}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.chart-tabs{display:flex;gap:6px;margin-bottom:14px}
+.chart-tab{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:none;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
+.chart-tab.active{background:var(--green);border-color:var(--green);color:#fff}
+.chart-legend{display:flex;gap:14px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;box-shadow:var(--shadow)}
+.stat-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--subtle);margin-bottom:6px}
+.stat-val{font-size:1.15rem;font-weight:800;color:var(--text)}.stat-sub{font-size:.71rem;color:var(--muted);margin-top:3px}
+.form-group{margin-bottom:14px}.form-label{font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:6px;display:block}
+.form-control{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:inherit;color:var(--text);background:var(--surface);outline:none;transition:border-color .2s}
+.form-control:focus{border-color:var(--green)}
+.toggle-row{display:flex;gap:8px}
+.toggle-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:none;font-size:.83rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .2s}
+.toggle-btn.active{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.analyze-btn{width:100%;padding:15px;border-radius:var(--radius);background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(46,125,50,.32);transition:transform .15s;letter-spacing:.03em;margin-top:6px}
+.analyze-btn:hover{transform:translateY(-1px)}
+#analysis-anim{display:none;background:var(--surface);border-radius:var(--radius);padding:24px;border:1px solid var(--border);box-shadow:var(--shadow-md);margin-top:16px}
+.anim-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.anim-step{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:.83rem;color:var(--muted);opacity:0;transform:translateX(-10px);transition:opacity .4s,transform .4s}
+.anim-step.visible{opacity:1;transform:none}
+.anim-check{width:20px;height:20px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:transparent}
+.anim-check.done{background:var(--green);color:#fff}
+#ai-result{display:none;margin-top:16px}
+.result-card{background:linear-gradient(145deg,#1b5e20,#2e7d32);border-radius:var(--radius);padding:22px;color:#fff;box-shadow:0 8px 28px rgba(46,125,50,.32);margin-bottom:14px}
+.result-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.7;margin-bottom:8px}
+.result-rec{font-size:1.45rem;font-weight:900;letter-spacing:.05em;margin-bottom:16px}
+.result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:.83rem}
+.result-row:last-child{border:none}.result-row span:last-child{font-weight:700}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;border:1px solid var(--border);margin-bottom:14px}
+.factor-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.factor-name{font-size:.78rem;width:130px;color:var(--text);flex-shrink:0}
+.factor-bar-wrap{flex:1;height:8px;background:var(--green-bg);border-radius:4px;overflow:hidden}
+.factor-bar{height:100%;background:var(--green);border-radius:4px}.factor-bar.neg{background:var(--earthy-light)}
+.factor-sign{font-size:.78rem;font-weight:700;color:var(--green);width:30px;text-align:right;flex-shrink:0}.factor-sign.neg{color:var(--earthy)}
+.insight-box{background:var(--green-bg);border-left:4px solid var(--green);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 16px;font-size:.83rem;color:var(--text);line-height:1.65;margin-bottom:14px}
+.voice-card{background:var(--surface);border:2px dashed var(--green-mid);border-radius:var(--radius);padding:22px;text-align:center;margin-bottom:16px;cursor:pointer;transition:background .2s}
+.voice-card:hover{background:var(--green-bg)}.voice-icon{font-size:2.4rem;margin-bottom:8px}
+.voice-title{font-size:.93rem;font-weight:700;color:var(--text);margin-bottom:4px}.voice-sub{font-size:.76rem;color:var(--muted)}
+.voice-langs{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.voice-lang{font-size:.7rem;padding:3px 10px;border:1px solid var(--border);border-radius:20px;color:var(--muted)}
+.example-q{background:var(--earthy-bg);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;cursor:pointer;transition:background .2s}
+.example-q:hover{background:#e8ddd9}.q-text{font-size:.83rem;color:var(--earthy);font-style:italic;margin-bottom:3px}
+.q-lang{font-size:.7rem;color:var(--earthy-light);font-weight:600}
+.voice-resp{display:none;background:var(--green-bg);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;font-size:.84rem;color:var(--text);line-height:1.65;border-left:4px solid var(--green)}
+.produce-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:12px}
+.produce-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}.produce-icon{font-size:2.1rem}
+.produce-name{font-size:1.05rem;font-weight:800;color:var(--text)}.produce-detail{font-size:.78rem;color:var(--muted)}
+.produce-vals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.p-val-box{background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px}
+.p-val-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--subtle);margin-bottom:4px}
+.p-val{font-size:1rem;font-weight:800;color:var(--text)}
+.p-rec{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm)}
+.p-rec-label{font-size:.76rem;color:var(--muted)}.p-rec-val{font-size:.83rem;font-weight:800;color:var(--green)}
+.income-hero{background:linear-gradient(135deg,#1b5e20,#33691e);border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:16px;box-shadow:0 6px 24px rgba(46,125,50,.28)}
+.income-hero-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.7;margin-bottom:6px}
+.income-hero-val{font-size:1.9rem;font-weight:900;margin-bottom:4px}.income-hero-sub{font-size:.83rem;opacity:.8}
+.opp-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)}
+.opp-label{font-size:.8rem;opacity:.8}.opp-val{font-size:1rem;font-weight:800;color:#fdd835}
+.arch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:14px}
+.arch-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.arch-flow{display:flex;flex-direction:column;align-items:center}
+.arch-node{background:var(--green-bg);border:2px solid var(--green);border-radius:var(--radius-sm);padding:10px 22px;font-size:.83rem;font-weight:700;color:var(--green);text-align:center;min-width:170px;margin:0}
+.arch-node.ibm{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+.arch-node.main{background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;border:none;font-size:.88rem;padding:12px 26px}
+.arch-node.cloud{background:#fff3e0;border-color:#ef6c00;color:#e65100}
+.arch-arrow{color:var(--green-mid);font-size:1.2rem;line-height:1.8;text-align:center;width:100%}
+.arch-split{display:flex;gap:10px;width:100%;justify-content:center}
+.arch-branch{display:flex;flex-direction:column;align-items:center;flex:1}
+.tech-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tech-pill{padding:5px 14px;border-radius:20px;font-size:.73rem;font-weight:700}
+.tech-pill.granite{background:#e3f2fd;color:var(--blue)}.tech-pill.cloud{background:#fff3e0;color:#e65100}
+.tech-pill.agentic{background:var(--green-bg);color:var(--green)}.tech-pill.bob{background:#f3e5f5;color:#6a1b9a}
+#screen-landing{background:#fff}
+.hero{background:linear-gradient(155deg,#e8f5e9 0%,#c8e6c9 50%,#f1f8e9 100%);padding:44px 20px 36px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(46,125,50,.06);border-radius:50%}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-mid);border-radius:20px;padding:5px 14px;font-size:.73rem;font-weight:700;color:var(--green);margin-bottom:14px}
+.hero-title{font-size:2rem;font-weight:900;color:var(--text);line-height:1.2;margin-bottom:10px}.hero-title span{color:var(--green)}
+.hero-sub{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:22px;max-width:380px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;flex-direction:column;gap:10px;max-width:300px;margin:0 auto}
+.btn-primary{padding:14px 24px;border-radius:var(--radius);background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-size:.93rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(46,125,50,.3);transition:transform .15s}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-secondary{padding:13px 24px;border-radius:var(--radius);background:none;border:2px solid var(--green);color:var(--green);font-size:.93rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-secondary:hover{background:var(--green-bg)}
+.impact-section{padding:28px 20px;max-width:500px;margin:0 auto}
+.impact-grid{display:grid;gap:12px}
+.impact-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+.impact-icon{font-size:1.7rem;flex-shrink:0}.impact-title{font-size:.93rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.impact-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.demo-note{background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-sm);padding:9px 14px;font-size:.73rem;color:#795548;text-align:center;margin:0 0 14px}
+.site-footer{background:var(--text);color:rgba(255,255,255,.7);padding:30px 20px;text-align:center;font-size:.78rem;line-height:1.9}
+.footer-logo{font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:6px}
+.footer-tech{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.footer-tag{padding:3px 12px;border-radius:20px;font-size:.68rem;border:1px solid rgba(255,255,255,.2)}
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:10px 20px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.detail-panel{display:none}.detail-panel.active{display:block}
+.detail-header-bar{background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:22px 18px;color:#fff}
+.detail-back{background:none;border:none;color:rgba(255,255,255,.8);font-size:.85rem;cursor:pointer;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;gap:6px;padding:0}
+.detail-name{font-size:1.25rem;font-weight:900;margin-bottom:2px}.detail-type-lbl{font-size:.8rem;opacity:.8;margin-bottom:10px}
+.detail-price-big{font-size:2.1rem;font-weight:900;margin-bottom:2px}.detail-unit-lbl{font-size:.83rem;opacity:.8;margin-bottom:6px}
+.detail-vs-lbl{font-size:.8rem;opacity:.7;margin-bottom:10px}
+.detail-match-badge{display:inline-block;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 14px;font-size:.8rem;font-weight:700}
+.why-section{padding:18px}.why-title{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.why-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.83rem;color:var(--text)}
+.why-row:last-child{border:none}.why-check{color:var(--green);font-size:.95rem;flex-shrink:0}
+.detail-btns{display:flex;flex-direction:column;gap:8px;padding:0 18px 18px}
+.btn-offer{width:100%;padding:13px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-weight:800;font-size:.93rem;cursor:pointer;font-family:inherit}
+.btn-contact{width:100%;padding:12px;border-radius:var(--radius-sm);background:var(--green-bg);border:1.5px solid var(--green);color:var(--green);font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit}
+.btn-compare{width:100%;padding:12px;border-radius:var(--radius-sm);background:none;border:1.5px solid var(--border);color:var(--muted);font-weight:600;font-size:.86rem;cursor:pointer;font-family:inherit}
+@media(min-width:520px){.container{padding:22px 24px}.hero{padding:56px 24px 44px}.hero-title{font-size:2.4rem}}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="showScreen('landing')"><span style="font-size:1.3rem">🌱</span> KhetiLink AI</div>
+  <span class="location-pill">📍 Gujarat</span>
+  <div class="header-right">
+    <div class="lang-grp">
+      <button class="lang-btn active">ગુ</button>
+      <button class="lang-btn">हि</button>
+      <button class="lang-btn">EN</button>
+    </div>
+    <button class="icon-btn">🔔<span class="badge"></span></button>
+    <button class="icon-btn">👤</button>
+  </div>
+</header>
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')"><span class="nav-icon">🏠</span>Dashboard</button>
+  <button class="nav-item" id="nav-prices" onclick="showScreen('prices')"><span class="nav-icon">📈</span>Prices</button>
+  <button class="nav-item ai-nav" id="nav-advisor" onclick="showScreen('advisor')"><span class="nav-icon">🤖</span>AI Advisor</button>
+  <button class="nav-item" id="nav-buyers" onclick="showScreen('buyers')"><span class="nav-icon">🤝</span>Buyers</button>
+  <button class="nav-item" id="nav-produce" onclick="showScreen('produce')"><span class="nav-icon">🌾</span>My Farm</button>
+</nav>
+<div id="toast"></div>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="hero">
+    <div class="hero-badge">🤖 Agentic AI &bull; IBM Granite LLM</div>
+    <h1 class="hero-title">Sell Smarter.<br/><span>Earn Better.</span></h1>
+    <p class="hero-sub">AI-powered market intelligence and direct buyer connections for Gujarat's cotton and groundnut farmers.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showScreen('dashboard')">🚀 Start Selling Smarter</button>
+      <button class="btn-secondary" onclick="showScreen('prices')">📈 Explore Market Prices</button>
+    </div>
+  </div>
+  <div class="impact-section">
+    <div class="demo-note">⚠️ Demo Market Data — Simulated values for demonstration purposes only. Not live mandi prices.</div>
+    <div class="impact-grid">
+      <div class="impact-card"><div class="impact-icon">📈</div><div><div class="impact-title">Better Price Decisions</div><div class="impact-desc">Understand real-time market trends before selling. Know when to sell for the best price.</div></div></div>
+      <div class="impact-card"><div class="impact-icon">🤝</div><div><div class="impact-title">Direct Market Access</div><div class="impact-desc">Connect directly with ginners, processors and exporters. Reduce dependency on middlemen.</div></div></div>
+      <div class="impact-card"><div class="impact-icon">💰</div><div><div class="impact-title">Better Income Potential</div><div class="impact-desc">Compare multiple buyer offers with AI matching. Make informed selling decisions every time.</div></div></div>
+      <div class="impact-card"><div class="impact-icon">🤖</div><div><div class="impact-title">Explainable AI</div><div class="impact-desc">Every recommendation explained clearly. Powered by IBM Granite LLM on IBM Cloud.</div></div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:10px" onclick="showScreen('arch')">🏗️ View AI Architecture</button>
+  </div>
+  <div class="site-footer">
+    <div class="footer-logo">🌱 KhetiLink AI</div>
+    <div>AI-powered market intelligence for Gujarat's cotton &amp; groundnut farmers.</div>
+    <div style="margin-top:6px;color:rgba(255,255,255,.5);font-size:.75rem">Created by <strong style="color:#fff">Khushi Patel</strong></div>
+    <div class="footer-tech">
+      <span class="footer-tag">IBM Granite LLM</span>
+      <span class="footer-tag">IBM Cloud</span>
+      <span class="footer-tag">Agentic AI</span>
+      <span class="footer-tag">IBM Bob</span>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="screen-dashboard" class="screen">
+  <div class="container">
+    <div style="margin-bottom:16px">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--text)">Namaste, Farmer 👋</div>
+      <div style="font-size:.83rem;color:var(--muted);margin-top:2px">Here's your market intelligence today.</div>
+    </div>
+    <div class="demo-note">⚠️ Demo Market Data — Values are simulated for demonstration purposes.</div>
+    <div class="price-grid">
+      <div class="price-chip" onclick="showScreen('prices')">
+        <div class="crop-label">🌿 Cotton</div>
+        <div class="price-val">&#8377;7,150</div>
+        <div class="price-unit">per Quintal</div>
+        <div class="trend up">&#8593; 2.4% today</div>
+      </div>
+      <div class="price-chip" onclick="showScreen('prices')">
+        <div class="crop-label">&#129386; Groundnut</div>
+        <div class="price-val">&#8377;5,820</div>
+        <div class="price-unit">per Quintal</div>
+        <div class="trend up">&#8593; 1.1% today</div>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-label">🤖 Market &amp; Buyer Intelligence Agent</div>
+      <div class="ai-card-crop">Cotton &bull; 25 Quintals &bull; Grade A</div>
+      <div class="rec-badge wait">&#9203; WAIT &amp; MONITOR</div>
+      <div class="ai-row"><span class="ai-row-label">Current Mandi Price</span><span class="ai-row-val">&#8377;7,150/q</span></div>
+      <div class="ai-row"><span class="ai-row-label">Expected 7-Day Price</span><span class="ai-row-val">&#8377;7,400&#8211;&#8377;7,550/q</span></div>
+      <div class="ai-row"><span class="ai-row-label">Best Buyer Offer</span><span class="ai-row-val">&#8377;7,350/q</span></div>
+      <div class="ai-row"><span class="ai-row-label">Best Buyer</span><span class="ai-row-val">Shree Gujarat Ginners</span></div>
+      <div class="ai-row"><span class="ai-row-label">AI Match Score</span><span class="ai-row-val">92%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:84%"></div></div>
+      <div style="font-size:.7rem;opacity:.65;margin-top:4px">AI Confidence: 84%</div>
+      <button class="ai-btn" onclick="showScreen('advisor')">&#128269; View AI Reasoning</button>
+    </div>
+    <div class="section-label" style="margin-top:0">Quick Actions</div>
+    <div class="quick-grid">
+      <div class="quick-item" onclick="showScreen('prices')"><div class="q-icon">📈</div><div class="q-label">Market Prices</div><div class="q-sub">Cotton &amp; Groundnut</div></div>
+      <div class="quick-item" onclick="showScreen('buyers')"><div class="q-icon">🤝</div><div class="q-label">Find Buyers</div><div class="q-sub">AI-matched buyers</div></div>
+      <div class="quick-item" onclick="showScreen('advisor')"><div class="q-icon">🤖</div><div class="q-label">AI Advisor</div><div class="q-sub">Get recommendation</div></div>
+      <div class="quick-item" onclick="showScreen('income')"><div class="q-icon">💰</div><div class="q-label">Income View</div><div class="q-sub">This season</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICES -->
+<div id="screen-prices" class="screen">
+  <div class="container">
+    <div class="page-title">📈 Price Intelligence</div>
+    <div class="page-sub">Understand today's market and upcoming price trends.</div>
+    <div class="demo-note">⚠️ Demo Market Data — Not live mandi prices.</div>
+    <div class="chart-tabs" style="margin-bottom:10px">
+      <button class="chart-tab active" id="crop-cotton" onclick="switchCrop('cotton',this)">🌿 Cotton</button>
+      <button class="chart-tab" id="crop-groundnut" onclick="switchCrop('groundnut',this)">&#129386; Groundnut</button>
+    </div>
+    <div class="chart-tabs">
+      <button class="chart-tab active" id="range-7d" onclick="switchRange('7d',this)">7 Days</button>
+      <button class="chart-tab" id="range-30d" onclick="switchRange('30d',this)">30 Days</button>
+      <button class="chart-tab" id="range-today" onclick="switchRange('today',this)">Today</button>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="priceChart" height="200"></canvas>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>Historical</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f9a825"></div>AI Forecast</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Current Price</div><div class="stat-val" id="stat-current">&#8377;7,150/q</div><div class="stat-sub trend up">&#8593; +2.4% today</div></div>
+      <div class="stat-card"><div class="stat-label">7-Day Forecast</div><div class="stat-val" id="stat-forecast">&#8377;7,420/q</div><div class="stat-sub" style="color:var(--green)">AI Predicted</div></div>
+      <div class="stat-card"><div class="stat-label">Market Trend</div><div class="stat-val" id="stat-trend" style="color:var(--green)">&#8593; Bullish</div><div class="stat-sub">Price rising</div></div>
+      <div class="stat-card"><div class="stat-label">AI Confidence</div><div class="stat-val" id="stat-conf">84%</div><div class="stat-sub">High</div></div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div style="font-size:.9rem;font-weight:800;color:var(--text);margin-bottom:10px">📊 Market Summary</div>
+      <div style="font-size:.83rem;color:var(--muted);line-height:1.7" id="market-summary">Cotton prices are on an upward trend. The current mandi price of &#8377;7,150/q is 2.4% above yesterday. AI forecasts prices reaching &#8377;7,400&#8211;&#8377;7,550/q over the next 7 days based on recent procurement patterns and seasonal demand indicators.</div>
+    </div>
+    <button class="analyze-btn" onclick="showScreen('advisor')" style="margin-top:14px">🤖 Get AI Selling Advice</button>
+  </div>
+</div>
+
+<!-- BUYERS -->
+<div id="screen-buyers" class="screen">
+  <div id="buyer-list-view">
+    <div class="container">
+      <div class="page-title">🤝 Find the Right Buyer</div>
+      <div class="page-sub">AI-matched buyers based on your crop, quantity, quality and location.</div>
+      <div class="filter-scroll">
+        <button class="filter-pill active" onclick="filterBuyers('all',this)">All</button>
+        <button class="filter-pill" onclick="filterBuyers('cotton',this)">🌿 Cotton</button>
+        <button class="filter-pill" onclick="filterBuyers('groundnut',this)">&#129386; Groundnut</button>
+        <button class="filter-pill" onclick="filterBuyers('pickup',this)">🚚 Pickup Avail.</button>
+        <button class="filter-pill" onclick="filterBuyers('highprice',this)">💰 Highest Price</button>
+        <button class="filter-pill" onclick="filterBuyers('near',this)">📍 Near (&lt;25km)</button>
+      </div>
+      <div id="buyer-cards-container"></div>
+    </div>
+  </div>
+  <div id="buyer-detail-view" class="detail-panel">
+    <div class="detail-header-bar">
+      <button class="detail-back" onclick="showBuyerList()">&#8592; Back to Buyers</button>
+      <div class="detail-name" id="detail-name">Shree Gujarat Ginners</div>
+      <div class="detail-type-lbl" id="detail-type">Cotton Buyer &bull; Gin Factory</div>
+      <div class="detail-price-big" id="detail-price">&#8377;7,350</div>
+      <div class="detail-unit-lbl">per Quintal</div>
+      <div class="detail-vs-lbl" id="detail-vs">Market Average: &#8377;7,150/q &nbsp;|&nbsp; &#8377;200/q above mandi</div>
+      <span class="detail-match-badge" id="detail-match">🤖 AI Match: 92%</span>
+    </div>
+    <div class="why-section">
+      <div class="why-title">🤖 Why this buyer?</div>
+      <div id="why-rows"></div>
+    </div>
+    <div class="detail-btns">
+      <button class="btn-offer" onclick="showToast('Offer sent successfully!')">📤 Send Offer</button>
+      <button class="btn-contact" onclick="showToast('Opening contact details...')">📞 Contact Buyer</button>
+      <button class="btn-compare" onclick="showToast('Compare feature coming soon!')">⚖️ Compare Buyers</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI ADVISOR -->
+<div id="screen-advisor" class="screen">
+  <div class="container">
+    <div class="page-title">🤖 AI Market Advisor</div>
+    <div class="page-sub">One AI agent. Market prices + buyer opportunities + selling recommendation.</div>
+    <div class="card">
+      <div style="font-size:.9rem;font-weight:800;color:var(--text);margin-bottom:12px">Tell the AI about your produce</div>
+      <div class="form-group">
+        <label class="form-label">Crop</label>
+        <select class="form-control" id="adv-crop"><option>Cotton</option><option>Groundnut</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quantity (Quintals)</label>
+        <input class="form-control" type="number" id="adv-qty" value="25" min="1"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quality Grade</label>
+        <select class="form-control" id="adv-grade"><option>Grade A</option><option>Grade B</option><option>Grade C</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <select class="form-control" id="adv-location">
+          <option>Ahmedabad, Gujarat</option><option>Rajkot, Gujarat</option><option>Bhavnagar, Gujarat</option><option>Surendranagar, Gujarat</option><option>Junagadh, Gujarat</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Storage Available?</label>
+        <div class="toggle-row">
+          <button class="toggle-btn active" id="stor-yes" onclick="setStorage(true)">&#10003; Yes</button>
+          <button class="toggle-btn" id="stor-no" onclick="setStorage(false)">&#10007; No</button>
+        </div>
+      </div>
+      <button class="analyze-btn" onclick="runAnalysis()">&#128269; Analyze My Selling Options</button>
+    </div>
+    <div id="analysis-anim">
+      <div class="anim-title">🤖 KhetiLink AI is analyzing...</div>
+      <div class="anim-step" id="as1"><div class="anim-check" id="ac1">&#10003;</div>Checking mandi prices</div>
+      <div class="anim-step" id="as2"><div class="anim-check" id="ac2">&#10003;</div>Analyzing recent price trends</div>
+      <div class="anim-step" id="as3"><div class="anim-check" id="ac3">&#10003;</div>Forecasting short-term prices</div>
+      <div class="anim-step" id="as4"><div class="anim-check" id="ac4">&#10003;</div>Searching suitable buyers</div>
+      <div class="anim-step" id="as5"><div class="anim-check" id="ac5">&#10003;</div>Comparing buyer offers</div>
+      <div class="anim-step" id="as6"><div class="anim-check" id="ac6">&#10003;</div>Checking quantity compatibility</div>
+      <div class="anim-step" id="as7"><div class="anim-check" id="ac7">&#10003;</div>Evaluating market opportunity</div>
+      <div class="anim-step" id="as8"><div class="anim-check" id="ac8">&#10003;</div>Generating recommendation</div>
+      <div id="anim-complete" style="display:none;margin-top:10px;font-size:.85rem;font-weight:700;color:var(--green)">&#10003; Analysis Complete</div>
+    </div>
+    <div id="ai-result">
+      <div class="result-card">
+        <div class="result-label">AI Recommendation</div>
+        <div class="result-rec" id="res-rec">&#9203; WAIT &amp; MONITOR</div>
+        <div class="result-row"><span>Current Mandi Price</span><span id="res-price">&#8377;7,150/q</span></div>
+        <div class="result-row"><span>Expected Price</span><span id="res-exp">&#8377;7,400&#8211;&#8377;7,550/q</span></div>
+        <div class="result-row"><span>Best Current Buyer</span><span id="res-buyer">&#8377;7,350/q</span></div>
+        <div class="result-row"><span>Best Buyer Name</span><span id="res-bname">Shree Gujarat Ginners</span></div>
+        <div class="result-row"><span>AI Confidence</span><span id="res-conf">84%</span></div>
+        <div class="result-row"><span>Potential Opportunity</span><span id="res-opp">&#8377;6,250&#8211;&#8377;10,000</span></div>
+        <div class="result-row"><span>Risk Level</span><span id="res-risk">Medium</span></div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:.9rem;font-weight:800;color:var(--text);margin-bottom:12px">&#128269; AI Decision Factors</div>
+        <div class="factor-row"><div class="factor-name">Price Trend</div><div class="factor-bar-wrap"><div class="factor-bar" style="width:85%"></div></div><div class="factor-sign">+++</div></div>
+        <div class="factor-row"><div class="factor-name">Buyer Demand</div><div class="factor-bar-wrap"><div class="factor-bar" style="width:70%"></div></div><div class="factor-sign">++</div></div>
+        <div class="factor-row"><div class="factor-name">Buyer Offer</div><div class="factor-bar-wrap"><div class="factor-bar" style="width:68%"></div></div><div class="factor-sign">++</div></div>
+        <div class="factor-row"><div class="factor-name">Market Opportunity</div><div class="factor-bar-wrap"><div class="factor-bar" style="width:72%"></div></div><div class="factor-sign">++</div></div>
+        <div class="factor-row"><div class="factor-name">Storage Cost</div><div class="factor-bar-wrap"><div class="factor-bar neg" style="width:35%"></div></div><div class="factor-sign neg">-</div></div>
+        <div class="factor-row"><div class="factor-name">Market Risk</div><div class="factor-bar-wrap"><div class="factor-bar neg" style="width:40%"></div></div><div class="factor-sign neg">-</div></div>
+        <div style="margin-top:10px;font-size:.8rem;color:var(--muted)">Overall Confidence: <strong style="color:var(--green)" id="conf-display">84%</strong></div>
+      </div>
+      <div class="insight-box" id="ai-insight">Current buyer offers are competitive, but the market trend suggests that prices may improve over the next few days. The AI therefore recommends monitoring the market before making the final sale.</div>
+      <button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="showScreen('buyers')">🤝 View Matched Buyers</button>
+    </div>
+    <div class="section-label" style="margin-top:0">🎙️ Ask KhetiLink AI</div>
+    <div class="voice-card" onclick="triggerVoice()">
+      <div class="voice-icon">🎙️</div>
+      <div class="voice-title">Ask in your language</div>
+      <div class="voice-sub">Tap and speak — get AI answer instantly</div>
+      <div class="voice-langs"><span class="voice-lang">ગુજરાતી</span><span class="voice-lang">हिन्दी</span><span class="voice-lang">English</span></div>
+    </div>
+    <div class="section-label" style="margin-top:0">Example Questions</div>
+    <div class="example-q" onclick="showVoiceResp('guj')"><div class="q-text">"મારો કપાસ ક્યારે વેચવો?"</div><div class="q-lang">ગુજરાતી — When should I sell my cotton?</div></div>
+    <div class="voice-resp" id="voice-resp-guj"><strong>🤖 KhetiLink AI:</strong><br/>"હાલના ભાવ અને બજારના ટ્રેન્ડ પ્રમાણે થોડા દિવસ રાહ જોવી યોગ્ય હોઈ શકે છે. નજીકના ખરીદદારોમાં &#8377;7,350 પ્રતિ ક્વિન્ટલ ઉપલબ્ધ છે. AI અનુમાન: &#8377;7,400&#8211;&#8377;7,550 ભાવ આગળ વધી શકે."</div>
+    <div class="example-q" onclick="showVoiceResp('hin')"><div class="q-text">"आज मूंगफली का भाव क्या है?"</div><div class="q-lang">हिन्दी — What is today's groundnut price?</div></div>
+    <div class="voice-resp" id="voice-resp-hin"><strong>🤖 KhetiLink AI:</strong><br/>"आज मूंगफली का मंडी भाव &#8377;5,820/क्विंटल है। पिछले सप्ताह से 1.1% की बढ़ोतरी हुई है। AI का अनुमान: &#8377;5,900&#8211;&#8377;6,000 तक पहुंच सकता है। श्रेष्ठ खरीदार &#8377;5,950/क्विंटल दे रहे हैं।"</div>
+    <div class="example-q" onclick="showVoiceResp('eng')"><div class="q-text">"Which buyer offers the best price for my cotton?"</div><div class="q-lang">English</div></div>
+    <div class="voice-resp" id="voice-resp-eng"><strong>🤖 KhetiLink AI:</strong><br/>"For Grade A cotton in Gujarat, Shree Gujarat Ginners offers the best price at &#8377;7,350/q — &#8377;200 above the current mandi average. AI match score: 92%. Pickup available, 18 km away."</div>
+  </div>
+</div>
+
+<!-- MY PRODUCE -->
+<div id="screen-produce" class="screen">
+  <div class="container">
+    <div class="page-title">🌾 My Produce</div>
+    <div class="page-sub">Your current crop inventory and AI recommendations.</div>
+    <div class="demo-note">⚠️ Demo data — Update your actual inventory for real recommendations.</div>
+    <div class="produce-card">
+      <div class="produce-header"><div class="produce-icon">🌿</div><div><div class="produce-name">Cotton</div><div class="produce-detail">25 Quintals &bull; Grade A &bull; Harvested Oct 2024</div></div></div>
+      <div class="produce-vals">
+        <div class="p-val-box"><div class="p-val-label">Market Value</div><div class="p-val">&#8377;1,78,750</div></div>
+        <div class="p-val-box"><div class="p-val-label">Best Buyer</div><div class="p-val" style="color:var(--green)">&#8377;1,83,750</div></div>
+        <div class="p-val-box"><div class="p-val-label">Expected Max</div><div class="p-val">&#8377;1,88,750</div></div>
+        <div class="p-val-box"><div class="p-val-label">Opportunity</div><div class="p-val" style="color:var(--green)">+&#8377;5,000</div></div>
+      </div>
+      <div class="p-rec"><span class="p-rec-label">AI Recommendation</span><span class="p-rec-val">&#9203; WAIT &amp; MONITOR</span></div>
+      <button class="view-btn" style="margin-top:10px" onclick="showScreen('advisor')">🤖 Get AI Advice</button>
+    </div>
+    <div class="produce-card">
+      <div class="produce-header"><div class="produce-icon">&#129386;</div><div><div class="produce-name">Groundnut</div><div class="produce-detail">40 Quintals &bull; Grade A &bull; Harvested Sep 2024</div></div></div>
+      <div class="produce-vals">
+        <div class="p-val-box"><div class="p-val-label">Market Value</div><div class="p-val">&#8377;2,32,800</div></div>
+        <div class="p-val-box"><div class="p-val-label">Best Buyer</div><div class="p-val" style="color:var(--green)">&#8377;2,38,000</div></div>
+        <div class="p-val-box"><div class="p-val-label">Expected Max</div><div class="p-val">&#8377;2,40,000</div></div>
+        <div class="p-val-box"><div class="p-val-label">Opportunity</div><div class="p-val" style="color:var(--green)">+&#8377;5,200</div></div>
+      </div>
+      <div class="p-rec"><span class="p-rec-label">AI Recommendation</span><span class="p-rec-val" style="color:#1565c0">&#128176; SELL NOW</span></div>
+      <button class="view-btn" style="margin-top:10px" onclick="showScreen('buyers')">🤝 Find Buyers</button>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:4px" onclick="showToast('Add produce feature coming soon!')">+ Add New Produce</button>
+  </div>
+</div>
+
+<!-- INCOME -->
+<div id="screen-income" class="screen">
+  <div class="container">
+    <div class="page-title">💰 Income View</div>
+    <div class="page-sub">This season's estimated revenue and potential earnings.</div>
+    <div class="demo-note">⚠️ Estimated values based on demo market data.</div>
+    <div class="income-hero">
+      <div class="income-hero-label">This Season — Total Produce</div>
+      <div class="income-hero-val">85 Quintals</div>
+      <div class="income-hero-sub">Cotton 25q + Groundnut 40q + Other 20q</div>
+      <div class="opp-row"><span class="opp-label">Estimated Revenue</span><span class="opp-val">&#8377;6,18,800</span></div>
+      <div class="opp-row" style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span class="opp-label">Potential Revenue</span><span class="opp-val">&#8377;6,43,000</span></div>
+      <div class="opp-row" style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span class="opp-label">&#127919; Opportunity</span><span class="opp-val">+&#8377;24,200</span></div>
+    </div>
+    <div class="chart-wrap">
+      <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:12px">Actual vs Potential Revenue</div>
+      <canvas id="incomeChart" height="180"></canvas>
+      <div class="chart-legend" style="margin-top:12px">
+        <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>Estimated Revenue</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f9a825"></div>Potential Revenue</div>
+      </div>
+    </div>
+    <div class="insight-box"><strong>🤖 AI Insight:</strong> Better buyer matching and improved selling timing may increase potential revenue by approximately &#8377;24,200 this season. The biggest opportunity is in cotton, where waiting for the right buyer could add &#8377;5,000 in value.</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Cotton Revenue</div><div class="stat-val">&#8377;1,78,750</div><div class="stat-sub">25 Quintals</div></div>
+      <div class="stat-card"><div class="stat-label">Groundnut Revenue</div><div class="stat-val">&#8377;2,32,800</div><div class="stat-sub">40 Quintals</div></div>
+      <div class="stat-card"><div class="stat-label">Cotton Potential</div><div class="stat-val" style="color:var(--green)">&#8377;1,83,750</div><div class="stat-sub trend up">+&#8377;5,000</div></div>
+      <div class="stat-card"><div class="stat-label">Groundnut Potential</div><div class="stat-val" style="color:var(--green)">&#8377;2,38,000</div><div class="stat-sub trend up">+&#8377;5,200</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div id="screen-arch" class="screen">
+  <div class="container">
+    <div class="page-title">&#127959;&#65039; AI Agent Architecture</div>
+    <div class="page-sub">How KhetiLink AI's Agentic AI system works — built with IBM Bob.</div>
+    <div class="arch-card">
+      <div class="arch-title">&#129302; Market &amp; Buyer Intelligence Agent</div>
+      <div class="arch-flow">
+        <div class="arch-node">&#128119; FARMER</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node main">&#127807; KhetiLink AI Platform</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node main" style="font-size:.82rem">&#129302; Market &amp; Buyer Intelligence Agent</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-split">
+          <div class="arch-branch">
+            <div class="arch-node" style="min-width:0;font-size:.75rem;padding:8px 10px">&#128200; Mandi<br/>Intelligence</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:4px;text-align:center">Prices &bull; Trends<br/>Forecasts &bull; Seasons</div>
+          </div>
+          <div class="arch-branch">
+            <div class="arch-node" style="min-width:0;font-size:.75rem;padding:8px 10px">&#127981; Buyer<br/>Intelligence</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:4px;text-align:center">Matching &bull; Offers<br/>Location &bull; Ratings</div>
+          </div>
+        </div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node ibm">&#129504; IBM Granite LLM</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node cloud">&#9729;&#65039; IBM Cloud</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node" style="background:#f3e5f5;border-color:#6a1b9a;color:#6a1b9a">&#128736;&#65039; IBM Bob (Dev Environment)</div>
+        <div class="arch-arrow">&#8595;</div>
+        <div class="arch-node">&#128161; Explainable AI Recommendation</div>
+      </div>
+      <div class="tech-pills">
+        <span class="tech-pill granite">IBM Granite LLM</span>
+        <span class="tech-pill cloud">IBM Cloud</span>
+        <span class="tech-pill agentic">Agentic AI</span>
+        <span class="tech-pill bob">IBM Bob</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <div class="arch-title">&#128203; Agent Decision Flow</div>
+      <div style="font-size:.83rem;color:var(--muted);line-height:2.1">
+        <div>1. &#128119; <strong>Farmer</strong> enters crop, quantity, quality, location</div>
+        <div>2. &#128200; Agent fetches <strong>current mandi prices</strong></div>
+        <div>3. &#128202; Agent analyzes <strong>price trends &amp; forecasts</strong></div>
+        <div>4. &#127981; Agent <strong>searches &amp; matches buyers</strong></div>
+        <div>5. &#129504; <strong>IBM Granite LLM</strong> weighs all factors</div>
+        <div>6. &#128161; Agent generates <strong>SELL / WAIT / STORE recommendation</strong></div>
+        <div>7. &#128269; AI provides <strong>transparent decision factors</strong></div>
+        <div>8. &#128119; Farmer makes <strong>informed selling decision</strong></div>
+      </div>
+    </div>
+    <div class="arch-card">
+      <div class="arch-title">&#127775; Impact Story</div>
+      <div style="font-size:.83rem;color:var(--muted);line-height:2.2">
+        <div style="color:var(--green);font-weight:700">FARMER</div>
+        <div>&#8595; Current Market Price</div>
+        <div>&#8595; AI Analyzes Price + Buyer Options</div>
+        <div>&#8595; Best Buyers Identified</div>
+        <div>&#8595; AI Recommends SELL / WAIT</div>
+        <div>&#8595; Farmer Makes Informed Decision</div>
+        <div>&#8595; Better Market Access</div>
+        <div style="color:var(--green);font-weight:700">&#8595; Better Income Potential</div>
+      </div>
+    </div>
+    <div class="site-footer" style="margin:0 -16px">
+      <div class="footer-logo">&#127807; KhetiLink AI</div>
+      <div>AI-powered market intelligence for Gujarat's cotton &amp; groundnut farmers.</div>
+      <div style="margin-top:6px;color:rgba(255,255,255,.5);font-size:.75rem">Created by <strong style="color:#fff">Khushi Patel</strong></div>
+      <div class="footer-tech">
+        <span class="footer-tag">IBM Granite LLM</span>
+        <span class="footer-tag">IBM Cloud</span>
+        <span class="footer-tag">Agentic AI</span>
+        <span class="footer-tag">IBM Bob</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ─── DATA ───────────────────────────────────────────────────────────────
+const BUYERS = [
+  {id:1,name:'Shree Gujarat Ginners',type:'Cotton Buyer · Gin Factory',crop:'cotton',price:7350,dist:18,pickup:true,rating:4.7,match:92,qty:'10–50q',grade:'Grade A',aboveMandi:200,
+   why:['Accepts Grade A cotton','Quantity matches your 25 quintals','Offers ₹200/q above current mandi average','Located only 18 km away','Pickup available — no transport cost','Strong transaction history & reliable payments']},
+  {id:2,name:'Patel Cotton Industries',type:'Cotton Processor',crop:'cotton',price:7280,dist:8,pickup:false,rating:4.4,match:86,qty:'5–30q',grade:'Grade A/B',aboveMandi:130,
+   why:['Accepts Grade A/B cotton','Only 8 km away — minimal transport','Competitive price at ₹7,280/q','Established processor with 10+ years','Flexible payment terms available']},
+  {id:3,name:'Gujarat Agro Traders',type:'Cotton & Groundnut Broker',crop:'cotton',price:7200,dist:22,pickup:true,match:78,rating:4.2,qty:'20–100q',grade:'Grade A/B/C',aboveMandi:50,
+   why:['Accepts all cotton grades','Large quantity capacity — up to 100q','Pickup available','Broad crop portfolio buyer']},
+  {id:4,name:'Saurashtra Oil Mills',type:'Groundnut Processor',crop:'groundnut',price:5950,dist:12,pickup:true,rating:4.6,match:89,qty:'10–80q',grade:'Grade A',aboveMandi:130,
+   why:['Accepts Grade A groundnut','Offers ₹130/q above current mandi','Pickup available within 12 km','Leading oil mill in Saurashtra','Consistent buyer — reliable payments']},
+  {id:5,name:'Junagadh Groundnut Co.',type:'Groundnut Exporter',crop:'groundnut',price:5900,dist:35,pickup:false,rating:4.5,match:82,qty:'50–200q',grade:'Grade A',aboveMandi:80,
+   why:['Export quality groundnut buyer','Higher volume requirements (50q+)','Good price for large quantities','Reputed exporter with 15+ years']},
+  {id:6,name:'Rajkot Commodities',type:'Multi-Crop Trader',crop:'cotton',price:7150,dist:5,pickup:true,rating:4.1,match:71,qty:'5–50q',grade:'All Grades',aboveMandi:0,
+   why:['Very close — only 5 km away','Accepts all cotton grades','Pickup available','Offers mandi price — no premium']},
+];
+
+const COTTON_DATA = {
+  '7d': {
+    labels:['Day -7','Day -6','Day -5','Day -4','Day -3','Day -2','Yesterday','Today','Day +1','Day +2','Day +3','Day +4','Day +5','Day +6','Day +7'],
+    hist:[7020,7040,7010,7080,7090,7100,7110,7150,null,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,null,null,7150,7180,7220,7280,7350,7390,7420,7480],
+    current:'₹7,150/q',forecast_sum:'₹7,420/q',trend:'↑ Bullish',conf:'84%',
+    summary:'Cotton prices are on an upward trend. The current mandi price of ₹7,150/q is 2.4% above yesterday. AI forecasts prices reaching ₹7,400–₹7,550/q over the next 7 days based on procurement patterns and seasonal demand.'
+  },
+  '30d': {
+    labels:['Week -4','Week -3','Week -2','Week -1','This Week','Week +1','Week +2','Week +3','Week +4'],
+    hist:[6900,6950,7000,7050,7150,null,null,null,null],
+    forecast:[null,null,null,null,7150,7250,7350,7420,7500],
+    current:'₹7,150/q',forecast_sum:'₹7,500/q',trend:'↑ Bullish',conf:'78%',
+    summary:'Over the past 30 days, cotton prices have risen by approximately 3.6% from ₹6,900 to ₹7,150/q. AI forecasts continued upward movement driven by increased gin factory demand and reduced arrivals in mandis.'
+  },
+  today: {
+    labels:['9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM','5 PM','Forecast 6 PM'],
+    hist:[7100,7110,7120,7130,7140,7145,7148,7150,7150,null],
+    forecast:[null,null,null,null,null,null,null,null,7150,7170],
+    current:'₹7,150/q',forecast_sum:'₹7,170/q',trend:'↑ Steady',conf:'91%',
+    summary:'Today cotton has traded steadily from ₹7,100 at market open to ₹7,150/q at close. AI expects slight evening gain to ₹7,170 based on demand from major gin factories in Ahmedabad.'
+  }
+};
+
+const GROUNDNUT_DATA = {
+  '7d': {
+    labels:['Day -7','Day -6','Day -5','Day -4','Day -3','Day -2','Yesterday','Today','Day +1','Day +2','Day +3','Day +4','Day +5','Day +6','Day +7'],
+    hist:[5740,5760,5770,5790,5800,5810,5815,5820,null,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,null,null,5820,5840,5860,5880,5900,5920,5950,5990],
+    current:'₹5,820/q',forecast_sum:'₹5,950/q',trend:'↑ Moderate',conf:'79%',
+    summary:'Groundnut prices show steady upward movement. Current mandi price is ₹5,820/q, up 1.1% from yesterday. AI forecasts ₹5,900–₹6,000/q over 7 days driven by oil mill demand and post-harvest market dynamics.'
+  },
+  '30d': {
+    labels:['Week -4','Week -3','Week -2','Week -1','This Week','Week +1','Week +2','Week +3','Week +4'],
+    hist:[5600,5650,5700,5750,5820,null,null,null,null],
+    forecast:[null,null,null,null,5820,5880,5930,5970,6010],
+    current:'₹5,820/q',forecast_sum:'₹6,010/q',trend:'↑ Bullish',conf:'75%',
+    summary:'Groundnut has gained 3.9% over the past month. Strong oil mill procurement is the primary driver. 30-day AI forecast targets ₹6,000–₹6,050/q if current demand holds steady.'
+  },
+  today: {
+    labels:['9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM','5 PM','Forecast 6 PM'],
+    hist:[5790,5795,5800,5805,5810,5815,5818,5820,5820,null],
+    forecast:[null,null,null,null,null,null,null,null,5820,5835],
+    current:'₹5,820/q',forecast_sum:'₹5,835/q',trend:'↑ Steady',conf:'88%',
+    summary:'Groundnut trading steadily today. Opened at ₹5,790 and closed at ₹5,820/q. AI expects ₹5,835 by close driven by late afternoon oil mill procurement.'
+  }
+};
+
+const AI_RESULTS = {
+  cotton: {
+    rec:'⏳ WAIT & MONITOR', recClass:'wait',
+    price:'₹7,150/q',exp:'₹7,400–₹7,550/q',buyer:'₹7,350/q',bname:'Shree Gujarat Ginners',conf:'84%',opp:'₹6,250–₹10,000',risk:'Medium',
+    insight:'Current buyer offers are competitive, but the market trend suggests that prices may improve over the next few days. The AI therefore recommends monitoring the market before making the final sale.',
+    factors:[{name:'Price Trend',val:85,sign:'+++',neg:false},{name:'Buyer Demand',val:70,sign:'++',neg:false},{name:'Buyer Offer',val:68,sign:'++',neg:false},{name:'Market Opportunity',val:72,sign:'++',neg:false},{name:'Storage Cost',val:35,sign:'-',neg:true},{name:'Market Risk',val:40,sign:'-',neg:true}]
+  },
+  groundnut: {
+    rec:'💰 SELL NOW', recClass:'sell',
+    price:'₹5,820/q',exp:'₹5,900–₹6,000/q',buyer:'₹5,950/q',bname:'Saurashtra Oil Mills',conf:'79%',opp:'₹5,200–₹8,000',risk:'Low-Medium',
+    insight:'Current groundnut buyer offers at ₹5,950/q are already above forecast levels. Oil mill demand is strong right now. AI recommends selling now to capture the current premium before seasonal supply increases.',
+    factors:[{name:'Buyer Offer',val:88,sign:'+++',neg:false},{name:'Demand Strength',val:80,sign:'+++',neg:false},{name:'Price Trend',val:65,sign:'++',neg:false},{name:'Market Opportunity',val:70,sign:'++',neg:false},{name:'Supply Risk',val:30,sign:'-',neg:true},{name:'Storage Cost',val:25,sign:'-',neg:true}]
+  }
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────
+let currentCrop = 'cotton';
+let currentRange = '7d';
+let priceChart = null;
+let incomeChart = null;
+let storageAvail = true;
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-'+id);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+
+  // nav highlight
+  const navMap = {dashboard:'nav-dashboard',prices:'nav-prices',advisor:'nav-advisor',buyers:'nav-buyers',produce:'nav-produce'};
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navId = navMap[id];
+  if (navId) {
+    const btn = document.getElementById(navId);
+    if (btn) btn.classList.add('active');
+  }
+
+  // lazy init charts
+  if (id === 'prices') setTimeout(() => initPriceChart(), 100);
+  if (id === 'income') setTimeout(() => initIncomeChart(), 100);
+  if (id === 'buyers') renderBuyerCards('all');
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── PRICE CHART ────────────────────────────────────────────────────────
+function initPriceChart() {
+  const data = (currentCrop === 'cotton' ? COTTON_DATA : GROUNDNUT_DATA)[currentRange];
+  const ctx = document.getElementById('priceChart');
+  if (!ctx) return;
+  if (priceChart) { priceChart.destroy(); }
+
+  // Update stats
+  document.getElementById('stat-current').textContent = data.current;
+  document.getElementById('stat-forecast').textContent = data.forecast_sum;
+  document.getElementById('stat-trend').textContent = data.trend;
+  document.getElementById('stat-conf').textContent = data.conf;
+  document.getElementById('market-summary').textContent = data.summary;
+
+  priceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [
+        {
+          label: 'Historical',
+          data: data.hist,
+          borderColor: '#2e7d32',
+          backgroundColor: 'rgba(46,125,50,.08)',
+          borderWidth: 2.5,
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: '#2e7d32',
+          spanGaps: false
+        },
+        {
+          label: 'AI Forecast',
+          data: data.forecast,
+          borderColor: '#f9a825',
+          backgroundColor: 'rgba(249,168,37,.07)',
+          borderWidth: 2.5,
+          borderDash: [6,4],
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: '#f9a825',
+          spanGaps: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.raw ? '₹' + ctx.raw.toLocaleString('en-IN') + '/q' : null
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } },
+        y: {
+          grid: { color: 'rgba(0,0,0,.05)' },
+          ticks: {
+            font: { size: 10 },
+            callback: v => '₹' + v.toLocaleString('en-IN')
+          }
+        }
+      }
+    }
+  });
+}
+
+function switchCrop(crop, btn) {
+  currentCrop = crop;
+  document.querySelectorAll('[id^="crop-"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  initPriceChart();
+}
+
+function switchRange(range, btn) {
+  currentRange = range;
+  document.querySelectorAll('[id^="range-"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  initPriceChart();
+}
+
+// ─── INCOME CHART ───────────────────────────────────────────────────────
+function initIncomeChart() {
+  const ctx = document.getElementById('incomeChart');
+  if (!ctx) return;
+  if (incomeChart) { incomeChart.destroy(); }
+  incomeChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Cotton', 'Groundnut', 'Other'],
+      datasets: [
+        { label: 'Estimated Revenue', data: [178750, 232800, 207250], backgroundColor: '#2e7d32' },
+        { label: 'Potential Revenue', data: [183750, 238000, 221250], backgroundColor: '#f9a825' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: {
+          grid: { color: 'rgba(0,0,0,.05)' },
+          ticks: { font: { size: 10 }, callback: v => '₹' + (v/1000).toFixed(0) + 'k' }
+        }
+      }
+    }
+  });
+}
+
+// ─── BUYERS ─────────────────────────────────────────────────────────────
+function renderBuyerCards(filter) {
+  const c = document.getElementById('buyer-cards-container');
+  if (!c) return;
+  let list = [...BUYERS];
+  if (filter === 'cotton') list = list.filter(b => b.crop === 'cotton');
+  else if (filter === 'groundnut') list = list.filter(b => b.crop === 'groundnut');
+  else if (filter === 'pickup') list = list.filter(b => b.pickup);
+  else if (filter === 'highprice') list = [...list].sort((a,b) => b.price - a.price);
+  else if (filter === 'near') list = list.filter(b => b.dist < 25);
+
+  c.innerHTML = list.map((b,i) => `
+    <div class="buyer-card" onclick="showBuyerDetail(${b.id})">
+      ${i===0 && filter==='all'?'<div class="top-badge">⭐ TOP MATCH</div>':''}
+      <div class="buyer-top">
+        <div><div class="buyer-name">🏭 ${b.name}</div><div class="buyer-type">${b.type}</div></div>
+        <span class="match-pill">🤖 ${b.match}%</span>
+      </div>
+      <div class="buyer-price">₹${b.price.toLocaleString('en-IN')} <span>/ Quintal</span></div>
+      <div class="buyer-meta">
+        <span class="meta-tag">📍 ${b.dist} km</span>
+        <span class="meta-tag">${b.pickup?'🚚 Pickup':'🏪 Mill Only'}</span>
+        <span class="meta-tag"><span class="star">★</span> ${b.rating}</span>
+        <span class="meta-tag">📦 ${b.qty}</span>
+        ${b.aboveMandi>0?`<span class="meta-tag" style="color:var(--green);font-weight:600">+₹${b.aboveMandi} above mandi</span>`:''}
+      </div>
+      <button class="view-btn">View Buyer →</button>
+    </div>
+  `).join('');
+}
+
+function filterBuyers(filter, btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderBuyerCards(filter);
+}
+
+function showBuyerDetail(id) {
+  const b = BUYERS.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('detail-name').textContent = b.name;
+  document.getElementById('detail-type').textContent = b.type;
+  document.getElementById('detail-price').textContent = '₹' + b.price.toLocaleString('en-IN');
+  const mandiPrice = b.crop === 'cotton' ? 7150 : 5820;
+  document.getElementById('detail-vs').textContent = `Market Average: ₹${mandiPrice.toLocaleString('en-IN')}/q  |  ${b.aboveMandi>0?'₹'+b.aboveMandi+'/q above mandi':'At mandi price'}`;
+  document.getElementById('detail-match').textContent = `🤖 AI Match: ${b.match}%`;
+  document.getElementById('why-rows').innerHTML = b.why.map(w=>`<div class="why-row"><span class="why-check">✓</span>${w}</div>`).join('');
+  document.getElementById('buyer-list-view').style.display = 'none';
+  document.getElementById('buyer-detail-view').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showBuyerList() {
+  document.getElementById('buyer-list-view').style.display = '';
+  document.getElementById('buyer-detail-view').classList.remove('active');
+}
+
+// ─── AI ADVISOR ─────────────────────────────────────────────────────────
+function setStorage(val) {
+  storageAvail = val;
+  document.getElementById('stor-yes').classList.toggle('active', val);
+  document.getElementById('stor-no').classList.toggle('active', !val);
+}
+
+function runAnalysis() {
+  const crop = document.getElementById('adv-crop').value.toLowerCase();
+  const animEl = document.getElementById('analysis-anim');
+  const resultEl = document.getElementById('ai-result');
+  animEl.style.display = 'block';
+  resultEl.style.display = 'none';
+  // Reset steps
+  for(let i=1;i<=8;i++){
+    document.getElementById('as'+i).classList.remove('visible');
+    document.getElementById('ac'+i).classList.remove('done');
+  }
+  document.getElementById('anim-complete').style.display='none';
+  // Animate steps
+  const delay = 420;
+  for(let i=1;i<=8;i++){
+    (function(n){
+      setTimeout(()=>{
+        document.getElementById('as'+n).classList.add('visible');
+        setTimeout(()=>document.getElementById('ac'+n).classList.add('done'), 200);
+      }, n*delay);
+    })(i);
+  }
+  setTimeout(()=>{
+    document.getElementById('anim-complete').style.display='block';
+    showResult(crop);
+  }, 8*delay+600);
+}
+
+function showResult(crop) {
+  const d = AI_RESULTS[crop === 'cotton' ? 'cotton' : 'groundnut'];
+  document.getElementById('res-rec').textContent = d.rec;
+  document.getElementById('res-price').textContent = d.price;
+  document.getElementById('res-exp').textContent = d.exp;
+  document.getElementById('res-buyer').textContent = d.buyer;
+  document.getElementById('res-bname').textContent = d.bname;
+  document.getElementById('res-conf').textContent = d.conf;
+  document.getElementById('res-opp').textContent = d.opp;
+  document.getElementById('res-risk').textContent = d.risk;
+  document.getElementById('conf-display').textContent = d.conf;
+  document.getElementById('ai-insight').textContent = d.insight;
+
+  // Factor bars
+  const factorContainer = document.querySelector('#ai-result .card .factor-row:first-of-type').parentElement;
+  const factorRows = factorContainer.querySelectorAll('.factor-row');
+  d.factors.forEach((f,i)=>{
+    if(factorRows[i]){
+      factorRows[i].querySelector('.factor-name').textContent = f.name;
+      const bar = factorRows[i].querySelector('.factor-bar');
+      bar.style.width = f.val+'%';
+      bar.classList.toggle('neg', f.neg);
+      const sign = factorRows[i].querySelector('.factor-sign');
+      sign.textContent = f.sign;
+      sign.classList.toggle('neg', f.neg);
+    }
+  });
+
+  document.getElementById('ai-result').style.display = 'block';
+  document.getElementById('ai-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── VOICE ──────────────────────────────────────────────────────────────
+function triggerVoice() {
+  showToast('🎙️ Voice feature — tap an example question below');
+}
+
+function showVoiceResp(lang) {
+  ['guj','hin','eng'].forEach(l => {
+    const el = document.getElementById('voice-resp-'+l);
+    if (el) el.style.display = l===lang ? 'block' : 'none';
+  });
+  document.getElementById('voice-resp-'+lang).scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderBuyerCards('all');
+});
+
+</script>
+</body>
+</html>
